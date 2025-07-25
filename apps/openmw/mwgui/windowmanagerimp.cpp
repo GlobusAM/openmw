@@ -205,7 +205,7 @@ namespace MWGui
         SDL_GL_GetDrawableSize(window, &dw, &dh);
 
         mScalingFactor = Settings::gui().mScalingFactor * (dw / w);
-        mGuiPlatform = std::make_unique<osgMyGUI::Platform>(viewer, guiRoot, resourceSystem->getImageManager(),
+        mGuiPlatform = std::make_unique<MyGUIPlatform::Platform>(viewer, guiRoot, resourceSystem->getImageManager(),
             resourceSystem->getVFS(), mScalingFactor, "mygui", logpath / "MyGUI.log");
 
         mGui = std::make_unique<MyGUI::Gui>();
@@ -229,8 +229,8 @@ namespace MWGui
         MyGUI::FactoryManager::getInstance().registerFactory<MWGui::Window>("Widget");
         MyGUI::FactoryManager::getInstance().registerFactory<VideoWidget>("Widget");
         MyGUI::FactoryManager::getInstance().registerFactory<BackgroundImage>("Widget");
-        MyGUI::FactoryManager::getInstance().registerFactory<osgMyGUI::AdditiveLayer>("Layer");
-        MyGUI::FactoryManager::getInstance().registerFactory<osgMyGUI::ScalingLayer>("Layer");
+        MyGUI::FactoryManager::getInstance().registerFactory<MyGUIPlatform::AdditiveLayer>("Layer");
+        MyGUI::FactoryManager::getInstance().registerFactory<MyGUIPlatform::ScalingLayer>("Layer");
         BookPage::registerMyGUIComponents();
         PostProcessorHud::registerMyGUIComponents();
         ItemView::registerComponents();
@@ -409,7 +409,7 @@ namespace MWGui
         mCountDialog = countDialog.get();
         mWindows.push_back(std::move(countDialog));
 
-        auto settingsWindow = std::make_unique<SettingsWindow>();
+        auto settingsWindow = std::make_unique<SettingsWindow>(mCfgMgr);
         mSettingsWindow = settingsWindow.get();
         mWindows.push_back(std::move(settingsWindow));
         trackWindow(mSettingsWindow, makeSettingsWindowSettingValues());
@@ -503,7 +503,7 @@ namespace MWGui
         mWindows.push_back(std::move(debugWindow));
         trackWindow(mDebugWindow, makeDebugWindowSettingValues());
 
-        auto postProcessorHud = std::make_unique<PostProcessorHud>();
+        auto postProcessorHud = std::make_unique<PostProcessorHud>(mCfgMgr);
         mPostProcessorHud = postProcessorHud.get();
         mWindows.push_back(std::move(postProcessorHud));
         trackWindow(mPostProcessorHud, makePostprocessorWindowSettingValues());
@@ -1127,7 +1127,7 @@ namespace MWGui
             std::vector<std::string> split;
             Misc::StringUtils::split(tag, split, ":");
 
-            l10n::Manager& l10nManager = *MWBase::Environment::get().getL10nManager();
+            L10n::Manager& l10nManager = *MWBase::Environment::get().getL10nManager();
 
             // If a key has a "Context:KeyName" format, use YAML to translate data
             if (split.size() == 2)
