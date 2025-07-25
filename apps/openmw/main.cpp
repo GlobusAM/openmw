@@ -212,8 +212,6 @@ namespace
     };
 }
 
-Files::ConfigurationManager *g_cfgMgr;
-
 int runApplication(int argc, char* argv[])
 {
     Platform::init();
