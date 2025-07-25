@@ -32,7 +32,6 @@
 #include <components/vfs/manager.hpp>
 #include <components/vfs/recursivedirectoryiterator.hpp>
 #include <components/widgets/sharedstatebutton.hpp>
-#include <components/files/configurationmanager.hpp>
 
 #include "../mwbase/environment.hpp"
 #include "../mwbase/inputmanager.hpp"
@@ -40,7 +39,6 @@
 #include "../mwbase/soundmanager.hpp"
 #include "../mwbase/windowmanager.hpp"
 #include "../mwbase/world.hpp"
-#include "../mwlua/luamanagerimp.hpp"
 
 #include "confirmationdialog.hpp"
 
@@ -151,8 +149,6 @@ namespace
             box->setIndexSelected(MyGUI::ITEM_NONE);
     }
 }
-
-extern Files::ConfigurationManager *g_cfgMgr;
 
 namespace MWGui
 {
@@ -1094,13 +1090,6 @@ namespace MWGui
         resetScrollbars();
         renderScriptSettings();
         MWBase::Environment::get().getWindowManager()->setKeyFocusWidget(mOkButton);
-    }
-
-    void SettingsWindow::onClose()
-    {
-        // Save user settings
-        Settings::Manager::saveUser(g_cfgMgr->getUserConfigPath() / "settings.cfg");
-        MWBase::Environment::get().getLuaManager()->savePermanentStorage(g_cfgMgr->getUserConfigPath());
     }
 
     void SettingsWindow::onWindowResize(MyGUI::Window* _sender)
