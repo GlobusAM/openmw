@@ -65,6 +65,19 @@ Water Settings
    This setting has no effect if refraction is turned off.
 
 .. omw-setting::
+   :title: light absorption
+   :type: boolean
+   :range: true, false
+   :default: true
+   :location: :bdg-info:`In Game > Options > Video > Water`
+
+   This setting enables light absorption.
+   This makes water absorb colours with depth, reducing reds and greens and leaving a blue tint as the water depth increases,
+   simulating how real water behaves.
+
+   This setting has no effect if refraction is turned off.
+
+.. omw-setting::
    :title: wobbly shores
    :type: boolean
    :range: true, false
