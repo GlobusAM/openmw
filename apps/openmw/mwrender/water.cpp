@@ -685,6 +685,7 @@ namespace MWRender
         defineMap["rippleMapWorldScale"] = std::to_string(RipplesSurface::sWorldScaleFactor);
         defineMap["rippleMapSize"] = std::to_string(RipplesSurface::sRTTSize) + ".0";
         defineMap["sunlightScattering"] = Settings::water().mSunlightScattering ? "1" : "0";
+        defineMap["lightAbsorption"] = Settings::water().mLightAbsorption ? "1" : "0";
         defineMap["wobblyShores"] = Settings::water().mWobblyShores ? "1" : "0";
 
         Stereo::shaderStereoDefines(defineMap);
