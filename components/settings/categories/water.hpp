@@ -28,6 +28,7 @@ namespace Settings
         SettingValue<float> mRefractionScale{ mIndex, "Water", "refraction scale", makeClampSanitizerFloat(0, 1) };
         SettingValue<bool> mSunlightScattering{ mIndex, "Water", "sunlight scattering" };
         SettingValue<bool> mWobblyShores{ mIndex, "Water", "wobbly shores" };
+        SettingValue<bool> mLightAbsorption{ mIndex, "Water", "light absorption" };
     };
 }
 
