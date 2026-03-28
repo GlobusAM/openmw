@@ -270,7 +270,7 @@ namespace Resource
         : mOfflineCollect(offlineCollect)
         , mTextFont(getMonoFont(vfs))
     {
-        _characterSize = characterSize;
+        _characterSize = 28;
         _font.clear();
 
         setKeyEventTogglesOnScreenStats(osgGA::GUIEventAdapter::KEY_F3);
