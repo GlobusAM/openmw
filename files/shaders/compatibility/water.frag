@@ -14,7 +14,7 @@
 
 // tweakables -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
 
-const float VISIBILITY = 2500.0;
+const float VISIBILITY = 10000.0;
 const float VISIBILITY_DEPTH = VISIBILITY * 1.5;
 const float DEPTH_FADE = 0.15;
 
@@ -50,6 +50,7 @@ const vec2 WIND_DIR = vec2(0.5f, -0.8f);
 const float WIND_SPEED = 0.2f;
 
 const vec3 WATER_COLOR = vec3(0.090195, 0.115685, 0.12745);
+const vec3 ABSORPTION_COEFFS = vec3(0.0033, 0.0016, 0.0011);
 
 #if @wobblyShores
 const float WOBBLY_SHORE_FADE_DISTANCE = 6200.0;   // fade out wobbly shores to mask precision errors, the effect is almost impossible to see at a distance
@@ -197,7 +198,13 @@ void main(void)
     {
         float depthCorrection = sqrt(1.0 + 4.0 * DEPTH_FADE * DEPTH_FADE);
         float factor = DEPTH_FADE * DEPTH_FADE / (-0.5 * depthCorrection + 0.5 - waterDepthDistorted / VISIBILITY) + 0.5 * depthCorrection + 0.5;
+
+#if @lightAbsorption
+         vec3 absorption = refraction * exp(-ABSORPTION_COEFFS * clamp(waterDepthDistorted, 0.0, far));
+         refraction = mix(absorption, waterColor, clamp(factor, 0.0, 1.0));
+#else
         refraction = mix(refraction, waterColor, clamp(factor, 0.0, 1.0));
+#endif
     }
 
 #if @sunlightScattering
@@ -208,7 +215,7 @@ void main(void)
     vec3 scatterColour = mix(SCATTER_COLOUR * vec3(1.0, 0.4, 0.0), SCATTER_COLOUR, max(1.0 - exp(-sunHeight * SUN_EXT), 0.0));
     float scatterLambert = max(dot(sunWorldDir, scatterNormal) * 0.7 + 0.3, 0.0);
     float scatterReflectAngle = max(dot(reflect(sunWorldDir, scatterNormal), viewDir) * 2.0 - 1.2, 0.0);
-    float lightScatter = scatterLambert * scatterReflectAngle * SCATTER_AMOUNT * sunFade * sunSpec.a * max(1.0 - exp(-sunHeight), 0.0);
+    float lightScatter = scatterLambert * scatterReflectAngle * SCATTER_AMOUNT * sunFade * sunSpec.a * max(1.0 - exp(-sunHeight), 0.0) * shadow;
     refraction = mix(refraction, scatterColour, lightScatter);
 #endif
 
