@@ -273,6 +273,7 @@ namespace MWGui
         getWidget(mControllerSwitch, "ControllerButton");
         getWidget(mWaterRefractionButton, "WaterRefractionButton");
         getWidget(mSunlightScatteringButton, "SunlightScatteringButton");
+        getWidget(mLightAbsorptionButton, "LightAbsorptionButton");
         getWidget(mWobblyShoresButton, "WobblyShoresButton");
         getWidget(mWaterTextureSize, "WaterTextureSize");
         getWidget(mWaterReflectionDetail, "WaterReflectionDetail");
@@ -389,6 +390,7 @@ namespace MWGui
 
         const bool waterRefraction = Settings::water().mRefraction;
         mSunlightScatteringButton->setEnabled(waterRefraction);
+        mLightAbsorptionButton->setEnabled(waterRefraction);
         mWobblyShoresButton->setEnabled(waterRefraction);
 
         updateMaxLightsComboBox(mMaxLights);
@@ -526,6 +528,7 @@ namespace MWGui
         const bool refractionEnabled = Settings::water().mRefraction;
 
         mSunlightScatteringButton->setEnabled(refractionEnabled);
+        mLightAbsorptionButton->setEnabled(refractionEnabled);
         mWobblyShoresButton->setEnabled(refractionEnabled);
     }
 
