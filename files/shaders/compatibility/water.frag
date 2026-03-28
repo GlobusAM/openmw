@@ -50,7 +50,10 @@ const vec2 WIND_DIR = vec2(0.5f, -0.8f);
 const float WIND_SPEED = 0.2f;
 
 const vec3 WATER_COLOR = vec3(0.090195, 0.115685, 0.12745);
+
+#if @lightAbsorption
 const vec3 ABSORPTION_COEFFS = vec3(0.0033, 0.0016, 0.0011);
+#endif
 
 #if @wobblyShores
 const float WOBBLY_SHORE_FADE_DISTANCE = 6200.0;   // fade out wobbly shores to mask precision errors, the effect is almost impossible to see at a distance
