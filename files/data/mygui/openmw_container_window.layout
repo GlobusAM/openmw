@@ -2,14 +2,16 @@
 
 <MyGUI type="Layout">
     <Widget type="Window" skin="MW_Window" layer="Windows" position="0 0 600 300" name="_Main">
-        <Property key="MinSize" value="245 145"/>
+        <Property key="MinSize" value="372 145"/>
         <Property key="Visible" value="false"/>
 
         <!-- Items -->
-        <Widget type="ItemView" skin="MW_ItemView" position="5 5 575 225" name="ItemView" align="Left Top Stretch">
+        <Widget type="ItemView" skin="MW_ItemView" position="8 5 569 225" name="ItemView" align="Left Top Stretch">
         </Widget>
 
-        <Widget type="HBox" position="0 235 580 28" align="Right Bottom">
+        <Widget type="HBox" position="8 235 569 28" align="Right Bottom HStretch">
+            <Widget type="MWDynamicStat" skin="MW_ChargeBar_Blue" position="0 -1 188 24" name="EncumbranceBar" align="Left Top">
+            </Widget>
             <Widget type="Spacer"/>
             <Widget type="AutoSizedButton" skin="MW_Button" name="DisposeCorpseButton" align="Right Bottom">
                 <Property key="Caption" value="#{sDisposeofCorpse}"/>
