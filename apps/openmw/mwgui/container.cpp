@@ -45,6 +45,7 @@ namespace MWGui
         , mTreatNextOpenAsLoot(false)
     {
         getWidget(mDisposeCorpseButton, "DisposeCorpseButton");
+        getWidget(mEncumbranceBar, "EncumbranceBar");
         getWidget(mTakeButton, "TakeButton");
         getWidget(mCloseButton, "CloseButton");
 
@@ -137,6 +138,8 @@ namespace MWGui
 
     void ContainerWindow::dropItem()
     {
+        updateEncumbranceBar();
+        
         if (mModel == nullptr)
             return;
 
@@ -159,6 +162,7 @@ namespace MWGui
         bool lootAnyway = mTreatNextOpenAsLoot;
         mTreatNextOpenAsLoot = false;
         mPtr = container;
+        mEncumbranceBar->setVisible(false);
 
         bool loot = mPtr.getClass().isActor() && mPtr.getClass().getCreatureStats(mPtr).isDead();
 
@@ -177,6 +181,16 @@ namespace MWGui
         else
         {
             model = std::make_unique<ContainerItemModel>(container);
+
+            if (mPtr.getType() == ESM::Container::sRecordId)
+            {
+                MWWorld::LiveCellRef<ESM::Container>* ref = mPtr.get<ESM::Container>();
+                if (!(ref->mBase->mFlags & ESM::Container::Organic))
+                {
+                    updateEncumbranceBar();
+                    mEncumbranceBar->setVisible(true);
+                }
+            }            
         }
 
         mDisposeCorpseButton->setVisible(loot);
@@ -190,6 +204,15 @@ namespace MWGui
         MWBase::Environment::get().getWindowManager()->setKeyFocusWidget(mCloseButton);
 
         setTitle(container.getClass().getName(container));
+    }
+
+    void ContainerWindow::updateEncumbranceBar()
+    {
+        if (mPtr.isEmpty())
+            return;
+        float capacity = mPtr.getClass().getCapacity(mPtr);
+        float encumbrance = mPtr.getClass().getEncumbrance(mPtr);
+        mEncumbranceBar->setValue(std::ceil(encumbrance), static_cast<int>(capacity));
     }
 
     void ContainerWindow::resetReference()
@@ -400,6 +423,7 @@ namespace MWGui
     void ContainerWindow::onFrame(float dt)
     {
         checkReferenceAvailable();
+        updateEncumbranceBar();
 
         if (mUpdateNextFrame)
         {
