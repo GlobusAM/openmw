@@ -3,6 +3,7 @@
 
 #include "itemmodel.hpp"
 #include "referenceinterface.hpp"
+#include "widgets.hpp"
 #include "windowbase.hpp"
 
 #include <components/misc/notnullptr.hpp>
@@ -62,6 +63,7 @@ namespace MWGui
         int mSelectedItem;
         bool mUpdateNextFrame;
         bool mTreatNextOpenAsLoot;
+        Widgets::MWDynamicStat* mEncumbranceBar;
         MyGUI::Button* mDisposeCorpseButton;
         MyGUI::Button* mTakeButton;
         MyGUI::Button* mCloseButton;
@@ -71,6 +73,7 @@ namespace MWGui
         void dragItem(MyGUI::Widget* sender, std::size_t count);
         void transferItem(MyGUI::Widget* sender, std::size_t count);
         void dropItem();
+        void updateEncumbranceBar();
         void onCloseButtonClicked(MyGUI::Widget* sender);
         void onTakeAllButtonClicked(MyGUI::Widget* sender);
         void onDisposeCorpseButtonClicked(MyGUI::Widget* sender);
