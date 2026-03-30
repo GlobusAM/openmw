@@ -87,6 +87,11 @@ uniform float rainIntensity;
 
 uniform vec2 screenRes;
 
+#if @rainRippleOcclusion
+uniform sampler2D rainOcclusionMap;
+varying vec3 rainOcclusionCoord;
+#endif
+
 #define PER_PIXEL_LIGHTING 0
 
 #include "shadows_fragment.glsl"
@@ -116,7 +121,29 @@ void main(void)
     vec4 rainRipple;
 
     if (rainIntensity > 0.01)
-        rainRipple = rainCombined(position.xy/1000.0, waterTimer) * clamp(rainIntensity, 0.0, 1.0);
+    {
+        float occlusionFactor = 1.0;
+#if @rainRippleOcclusion
+        // Check if this water fragment is under a roof/structure
+        if (rainOcclusionCoord.x >= 0.0 && rainOcclusionCoord.x <= 1.0 &&
+            rainOcclusionCoord.y >= 0.0 && rainOcclusionCoord.y <= 1.0)
+        {
+            float sceneDepth = texture2D(rainOcclusionMap, rainOcclusionCoord.xy).r;
+#if @reverseZ
+            // In reversed Z, lower values are further away, higher values are closer to camera (sky)
+            // Water is occluded if scene depth is greater than water depth (something is between sky and water)
+            occlusionFactor = (rainOcclusionCoord.z < sceneDepth) ? 0.0 : 1.0;
+#else
+            // In normal Z, higher values are further away
+            // Water is occluded if scene depth is less than water depth
+            occlusionFactor = (rainOcclusionCoord.z > sceneDepth) ? 0.0 : 1.0;
+#endif
+            // Smooth fade at occlusion boundaries to avoid hard edges
+            occlusionFactor = mix(occlusionFactor, 1.0, smoothstep(0.95, 1.0, max(abs(rainOcclusionCoord.x - 0.5), abs(rainOcclusionCoord.y - 0.5)) * 2.0));
+        }
+#endif
+        rainRipple = rainCombined(position.xy/1000.0, waterTimer) * clamp(rainIntensity, 0.0, 1.0) * occlusionFactor;
+    }
     else
         rainRipple = vec4(0.0);
 
