@@ -44,6 +44,7 @@ namespace MWGui
 
         MyGUI::Button* mWaterRefractionButton;
         MyGUI::Button* mSunlightScatteringButton;
+        MyGUI::Button* mLightAbsorptionButton;
         MyGUI::Button* mWobblyShoresButton;
         MyGUI::ComboBox* mWaterTextureSize;
         MyGUI::ComboBox* mWaterReflectionDetail;
