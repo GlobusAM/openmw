@@ -654,7 +654,14 @@ namespace MWRender
         mResourceSystem->getSceneManager()->getShaderManager().update(*mViewer);
 
         mWater->setRainIntensity(mSky->getRainRipplesEnabled() ? mSky->getPrecipitationAlpha() : 0.f);
-
+        if (mSky->isPrecipitationOcclusionEnabled())
+        {
+            // Update the precipitation occluder camera matrices before retrieving them
+            mSky->updatePrecipitationOccluder();
+            mWater->setRainRippleOcclusion(
+            mSky->getPrecipitationOcclusionTexture(), mSky->getPrecipitationOcclusionMatrix());
+        }
+        
         mWater->update(dt, paused);
         if (!paused)
         {
