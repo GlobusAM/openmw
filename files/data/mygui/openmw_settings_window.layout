@@ -486,6 +486,20 @@
                                 <UserString key="HStretch" value="true"/>
                                 <UserString key="VStretch" value="false"/>
 
+                                <Widget type="AutoSizedButton" skin="MW_Button" name="LightAbsorptionButton">
+                                    <UserString key="SettingCategory" value="Water"/>
+                                    <UserString key="SettingName" value="light absorption"/>
+                                    <UserString key="SettingType" value="CheckButton"/>
+                                </Widget>
+                                <Widget type="AutoSizedTextBox" skin="SandText">
+                                    <Property key="Caption" value="#{OMWEngine:LightAbsorption}"/>
+                                </Widget>
+                            </Widget>
+
+                            <Widget type="HBox" align="Stretch">
+                                <UserString key="HStretch" value="true"/>
+                                <UserString key="VStretch" value="false"/>
+
                                 <Widget type="AutoSizedButton" skin="MW_Button" name="WobblyShoresButton">
                                     <UserString key="SettingCategory" value="Water"/>
                                     <UserString key="SettingName" value="wobbly shores"/>
