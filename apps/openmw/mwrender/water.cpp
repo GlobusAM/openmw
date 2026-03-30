@@ -610,15 +610,19 @@ namespace MWRender
     {
     public:
         ShaderWaterStateSetUpdater(Water* water, Reflection* reflection, Refraction* refraction, Ripples* ripples,
-            osg::ref_ptr<osg::Program> program, osg::ref_ptr<osg::Texture2D> normalMap)
+            osg::ref_ptr<osg::Program> program, osg::ref_ptr<osg::Texture2D> normalMap, bool rainOcclusionEnabled)
             : mWater(water)
             , mReflection(reflection)
             , mRefraction(refraction)
             , mRipples(ripples)
             , mProgram(std::move(program))
             , mNormalMap(std::move(normalMap))
+            , mRainOcclusionEnabled(rainOcclusionEnabled)
         {
         }
+
+        void setRainOcclusionTexture(osg::ref_ptr<osg::Texture2D> texture) { mRainOcclusionTexture = texture; }
+        void setRainOcclusionMatrix(const osg::Matrixf& matrix) { mRainOcclusionMatrix = matrix; }
 
         void setDefaults(osg::StateSet* stateset) override
         {
@@ -646,6 +650,11 @@ namespace MWRender
             {
                 stateset->addUniform(new osg::Uniform("rippleMap", 4));
             }
+            if (mRainOcclusionEnabled)
+            {
+                stateset->addUniform(new osg::Uniform("rainOcclusionMap", 5));
+                stateset->addUniform(new osg::Uniform("rainOcclusionMatrix", osg::Matrixf()));
+            }
             stateset->addUniform(new osg::Uniform("nodePosition", osg::Vec3f(mWater->getPosition())));
         }
 
@@ -663,6 +672,14 @@ namespace MWRender
             {
                 stateset->setTextureAttributeAndModes(4, mRipples->getColorTexture(), osg::StateAttribute::ON);
             }
+            if (mRainOcclusionEnabled && mRainOcclusionTexture)
+            {
+                stateset->setTextureAttributeAndModes(5, mRainOcclusionTexture, osg::StateAttribute::ON);
+            }
+            if (mRainOcclusionEnabled)
+            {
+                stateset->getUniform("rainOcclusionMatrix")->set(mRainOcclusionMatrix);
+            }            
             stateset->getUniform("nodePosition")->set(osg::Vec3f(mWater->getPosition()));
         }
 
@@ -673,6 +690,9 @@ namespace MWRender
         Ripples* mRipples;
         osg::ref_ptr<osg::Program> mProgram;
         osg::ref_ptr<osg::Texture2D> mNormalMap;
+        bool mRainOcclusionEnabled;
+        osg::ref_ptr<osg::Texture2D> mRainOcclusionTexture;
+        osg::Matrixf mRainOcclusionMatrix;
     };
 
     void Water::createShaderWaterStateSet(osg::Node* node)
@@ -687,6 +707,8 @@ namespace MWRender
         defineMap["sunlightScattering"] = Settings::water().mSunlightScattering ? "1" : "0";
         defineMap["lightAbsorption"] = Settings::water().mLightAbsorption ? "1" : "0";
         defineMap["wobblyShores"] = Settings::water().mWobblyShores ? "1" : "0";
+        const bool rainOcclusionEnabled = Settings::shaders().mWeatherParticleOcclusion;
+        defineMap["rainRippleOcclusion"] = rainOcclusionEnabled ? "1" : "0";
 
         Stereo::shaderStereoDefines(defineMap);
 
@@ -704,7 +726,7 @@ namespace MWRender
         node->setUpdateCallback(mRainSettingsUpdater);
 
         mShaderWaterStateSetUpdater = new ShaderWaterStateSetUpdater(
-            this, mReflection, mRefraction, mRipples, std::move(program), std::move(normalMap));
+            this, mReflection, mRefraction, mRipples, std::move(program), std::move(normalMap), rainOcclusionEnabled);
         node->addCullCallback(mShaderWaterStateSetUpdater);
     }
 
@@ -792,6 +814,17 @@ namespace MWRender
     {
         if (mRainSettingsUpdater)
             mRainSettingsUpdater->setRainIntensity(rainIntensity);
+    }
+
+    void Water::setRainRippleOcclusion(osg::ref_ptr<osg::Texture2D> texture, const osg::Matrixf& matrix)
+    {
+        if (mShaderWaterStateSetUpdater)
+        {
+            ShaderWaterStateSetUpdater* updater
+                = static_cast<ShaderWaterStateSetUpdater*>(mShaderWaterStateSetUpdater.get());
+            updater->setRainOcclusionTexture(texture);
+            updater->setRainOcclusionMatrix(matrix);
+        }
     }
 
     void Water::update(float dt, bool paused)
