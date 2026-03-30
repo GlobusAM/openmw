@@ -4,6 +4,7 @@
 #include <memory>
 #include <vector>
 
+#include <osg/Matrixf>
 #include <osg/Vec3d>
 #include <osg/Vec3f>
 #include <osg/ref_ptr>
@@ -18,6 +19,7 @@ namespace osg
     class Geometry;
     class Node;
     class Callback;
+    class Texture2D;
 }
 
 namespace osgUtil
@@ -114,6 +116,7 @@ namespace MWRender
         void changeCell(const MWWorld::CellStore* store);
         void setHeight(const float height);
         void setRainIntensity(const float rainIntensity);
+        void setRainRippleOcclusion(osg::ref_ptr<osg::Texture2D> texture, const osg::Matrixf& matrix);
 
         void update(float dt, bool paused);
 
