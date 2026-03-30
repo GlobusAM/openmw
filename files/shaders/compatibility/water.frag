@@ -14,14 +14,14 @@
 
 // tweakables -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
 
-const float VISIBILITY = 2500.0;
+const float VISIBILITY = 10000.0;
 const float VISIBILITY_DEPTH = VISIBILITY * 1.5;
 const float DEPTH_FADE = 0.15;
 
-const vec2 BIG_WAVES = vec2(0.1, 0.1); // strength of big waves
-const vec2 MID_WAVES = vec2(0.1, 0.1); // strength of middle sized waves
+const vec2 BIG_WAVES = vec2(0.1, 0.1);             // strength of big waves
+const vec2 MID_WAVES = vec2(0.1, 0.1);             // strength of middle sized waves
 const vec2 MID_WAVES_RAIN = vec2(0.2, 0.2);
-const vec2 SMALL_WAVES = vec2(0.1, 0.1); // strength of small waves
+const vec2 SMALL_WAVES = vec2(0.1, 0.1);           // strength of small waves
 const vec2 SMALL_WAVES_RAIN = vec2(0.3, 0.3);
 
 const float WAVE_CHOPPYNESS = 0.05;                // wave choppyness
@@ -38,7 +38,7 @@ const vec3 SCATTER_COLOUR = vec3(0.0,1.0,0.95);    // colour of sunlight scatter
 const vec3 SUN_EXT = vec3(0.45, 0.55, 0.68);       // sunlight extinction
 #endif
 
-const float SUN_SPEC_FADING_THRESHOLD = 0.15;       // visibility at which sun specularity starts to fade
+const float SUN_SPEC_FADING_THRESHOLD = 0.15;      // visibility at which sun specularity starts to fade
 const float SPEC_HARDNESS = 256.0;                 // specular highlights hardness
 const float SPEC_BUMPINESS = 5.0;                  // surface bumpiness boost for specular
 const float SPEC_BRIGHTNESS = 1.5;                 // boosts the brightness of the specular highlights
@@ -50,6 +50,10 @@ const vec2 WIND_DIR = vec2(0.5f, -0.8f);
 const float WIND_SPEED = 0.2f;
 
 const vec3 WATER_COLOR = vec3(0.090195, 0.115685, 0.12745);
+
+#if @lightAbsorption
+const vec3 ABSORPTION_COEFFS = vec3(0.0033, 0.0016, 0.0011);
+#endif
 
 #if @wobblyShores
 const float WOBBLY_SHORE_FADE_DISTANCE = 6200.0;   // fade out wobbly shores to mask precision errors, the effect is almost impossible to see at a distance
@@ -197,7 +201,14 @@ void main(void)
     {
         float depthCorrection = sqrt(1.0 + 4.0 * DEPTH_FADE * DEPTH_FADE);
         float factor = DEPTH_FADE * DEPTH_FADE / (-0.5 * depthCorrection + 0.5 - waterDepthDistorted / VISIBILITY) + 0.5 * depthCorrection + 0.5;
+
+#if @lightAbsorption
+        vec3 absorption = refraction * exp(-ABSORPTION_COEFFS * clamp(waterDepthDistorted, 0.0, far));
+
+        refraction = mix(absorption, waterColor, clamp(factor, 0.0, 1.0));
+#else
         refraction = mix(refraction, waterColor, clamp(factor, 0.0, 1.0));
+#endif
     }
 
 #if @sunlightScattering
