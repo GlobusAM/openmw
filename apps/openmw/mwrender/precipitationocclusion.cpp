@@ -179,4 +179,11 @@ namespace MWRender
         const osg::Vec3f margin = { -50, -50, 0 };
         mRange = range - margin;
     }
+
+    osg::Matrixf PrecipitationOccluder::getDepthSpaceMatrix() const
+    {
+        if (!mCamera)
+            return osg::Matrixf::identity();
+        return mCamera->getViewMatrix() * mCamera->getProjectionMatrix();
+    }
 }
