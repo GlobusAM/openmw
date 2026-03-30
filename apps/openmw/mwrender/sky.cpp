@@ -526,6 +526,31 @@ namespace MWRender
         return mPrecipitationAlpha;
     }
 
+    osg::ref_ptr<osg::Texture2D> SkyManager::getPrecipitationOcclusionTexture() const
+    {
+        if (mPrecipitationOccluder)
+            return mPrecipitationOccluder->getDepthTexture();
+        return nullptr;
+    }
+
+    osg::Matrixf SkyManager::getPrecipitationOcclusionMatrix() const
+    {
+        if (mPrecipitationOccluder)
+            return mPrecipitationOccluder->getDepthSpaceMatrix();
+        return osg::Matrixf::identity();
+    }
+
+    bool SkyManager::isPrecipitationOcclusionEnabled() const
+    {
+        return mPrecipitationOcclusion && mPrecipitationOccluder && mPrecipitationOccluder->isOcclusionEnabled();
+    }
+
+    void SkyManager::updatePrecipitationOccluder()
+    {
+        if (mPrecipitationOccluder)
+            mPrecipitationOccluder->update();
+    }
+
     void SkyManager::update(float duration)
     {
         if (!mEnabled)
