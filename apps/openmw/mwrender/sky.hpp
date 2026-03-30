@@ -5,6 +5,7 @@
 #include <string>
 #include <vector>
 
+#include <osg/Matrixf>
 #include <osg/Vec4f>
 #include <osg/ref_ptr>
 
@@ -20,6 +21,7 @@ namespace osg
     class Material;
     class PositionAttitudeTransform;
     class Camera;
+    class Texture2D;
 }
 
 namespace osgParticle
@@ -78,6 +80,13 @@ namespace MWRender
         bool getRainRipplesEnabled() const;
 
         float getPrecipitationAlpha() const;
+
+        osg::ref_ptr<osg::Texture2D> getPrecipitationOcclusionTexture() const;
+        osg::Matrixf getPrecipitationOcclusionMatrix() const;
+        bool isPrecipitationOcclusionEnabled() const;
+
+        /// Update precipitation occluder camera matrices. Must be called before getPrecipitationOcclusionMatrix().
+        void updatePrecipitationOccluder();
 
         void setStormParticleDirection(const osg::Vec3f& direction);
 
