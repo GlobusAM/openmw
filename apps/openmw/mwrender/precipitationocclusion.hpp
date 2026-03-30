@@ -21,6 +21,12 @@ namespace MWRender
 
         void updateRange(const osg::Vec3f range);
 
+        osg::ref_ptr<osg::Texture2D> getDepthTexture() const { return mDepthTexture; }
+
+        bool isOcclusionEnabled() const { return mRange.has_value(); }
+
+        osg::Matrixf getDepthSpaceMatrix() const;
+
     private:
         osg::Group* mSkyNode;
         osg::Group* mSceneNode;
