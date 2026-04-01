@@ -41,9 +41,13 @@ void doLighting(vec3 viewPos, vec3 viewNormal, float shininess, out vec3 diffuse
     vec3 viewDir = normalize(viewPos);
     shininess = max(shininess, 1e-4);
 
+    float NoV = dot(viewNormal, -viewDir);
+    NoV = 1 - pow(NoV, 2.0);
+    NoV = NoV * 0.5 + 0.5;
+
     vec3 sunDir = normalize(lcalcPosition(0));
     diffuseLight = lcalcDiffuse(0) * calcLambert(viewNormal, sunDir, viewDir);
-    ambientLight = gl_LightModel.ambient.xyz;
+    ambientLight = gl_LightModel.ambient.xyz * NoV;
     specularLight = lcalcSpecular(0).xyz * calcSpecIntensity(viewNormal, viewDir, shininess, sunDir);
 #if PER_PIXEL_LIGHTING
     diffuseLight *= shadowing;
