@@ -40,6 +40,20 @@
 -- @usage
 -- content.enchantments.records.MyEnchantment = { type = content.enchantments.TYPE.CastOnUse, charge = 1, cost = 1, effects = { { id = 'FortifySkill', affectedSkill = 'enchant', duration = 5, magnitudeMin = 50, magnitudeMax = 100 } } }
 
+--- @{#GMSTContent}: GMST manipulation.
+-- @field [parent=#content] #GMSTContent gameSettings
+
+---
+-- Returns a table containing all fallback values defined in `openmw.cfg`.
+-- @function [parent=#GMSTContent] getFallbacks
+-- @return #table
+
+---
+-- A mutable list of all game settings.
+-- @field [parent=#GMSTContent] #map<#string, #any> records
+-- @usage
+-- content.gameSettings.records.fJumpAcrobaticsBase = 1024
+
 --- @{#GlobalContent}: Global variable manipulation.
 -- @field [parent=#content] #GlobalContent globals
 
@@ -48,6 +62,16 @@
 -- @field [parent=#GlobalContent] #map<#string, #number> records
 -- @usage
 -- content.globals.records.MyVariable = 42
+
+--- @{#IngredientContent}: Ingredient manipulation.
+-- @field [parent=#content] #IngredientContent ingredients
+
+---
+-- A mutable list of all @{openmw.types#IngredientRecord}s.
+-- Note that ingredient effects only have the `id`, `affectedAttribute`, and `affectedSkill` properties.
+-- @field [parent=#IngredientContent] #list<openmw.types#IngredientRecord> records
+-- @usage
+-- content.ingredients.records.MyIngredient = { template = content.ingredients.records['ingred_ectoplasm_01'], name = 'Soylent', effects = { { id = 'vampirism' } } }
 
 --- @{#MiscContent}: Misc manipulation.
 -- @field [parent=#content] #MiscContent miscs
@@ -87,5 +111,14 @@
 -- @field [parent=#StaticContent] #list<openmw.types#StaticRecord> records
 -- @usage
 -- content.statics.records.MyStatic = { model = 'meshes/b/B_N_Wood Elf_M_Head_02.nif' }
+
+--- @{#SoundContent}: Sound manipulation.
+-- @field [parent=#content] #SoundContent sounds
+
+---
+-- A mutable list of all @{openmw.core#SoundRecord}s.
+-- @field [parent=#SoundContent] #list<openmw.core#SoundRecord> records
+-- @usage
+-- content.sounds.records.MySound = { template = content.sounds.records['MournDayAmb'], fileName = 'sound/fx/funny.wav' }
 
 return nil

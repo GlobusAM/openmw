@@ -82,7 +82,7 @@ message(STATUS "Configuring OpenMW...")
 set(OPENMW_VERSION_MAJOR 0)
 set(OPENMW_VERSION_MINOR 51)
 set(OPENMW_VERSION_RELEASE 0)
-set(OPENMW_LUA_API_REVISION 121)
+set(OPENMW_LUA_API_REVISION 122)
 set(OPENMW_POSTPROCESSING_API_REVISION 5)
 
 set(OPENMW_VERSION_COMMITHASH "")
@@ -379,10 +379,6 @@ endif()
 
 if(NOT FFmpeg_FOUND)
     message(FATAL_ERROR "FFmpeg was not found" )
-endif()
-
-if(WIN32)
-    message("Can not detect FFmpeg version, at least the 3.2 is required" )
 endif()
 
 # Required for building the FFmpeg headers
