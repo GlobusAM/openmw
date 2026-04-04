@@ -347,7 +347,7 @@ namespace Debug
             if (value == "DEBUG")
                 return Debug;
 
-            return Verbose;
+            return Error;
         }
 
         static std::unique_ptr<std::ostream> rawStdout = nullptr;
