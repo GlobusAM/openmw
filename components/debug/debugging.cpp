@@ -393,7 +393,7 @@ namespace Debug
         if (const char* env = getenv("OPENMW_RECAST_MAX_LOG_LEVEL"))
             return toLevel(env);
 
-        return Error;
+        return Warning;
     }
 
     void setupLogging(const std::filesystem::path& logDir, std::string_view appName)
