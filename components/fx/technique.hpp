@@ -150,6 +150,8 @@ namespace Fx
 
         bool getNormals() const { return mNormals && mSupportsNormals; }
 
+        bool getSpec() const { return mSpec && mSupportsNormals; }
+
         bool getLights() const { return mLights; }
 
         const PassList& getPasses() { return mPasses; }
@@ -289,6 +291,7 @@ namespace Fx
         bool mValid;
         bool mHDR;
         bool mNormals;
+        bool mSpec;
         bool mLights;
         int mWidth;
         int mHeight;

@@ -248,5 +248,9 @@ void main(void)
     gl_FragData[1].rgb = normalize(gl_NormalMatrix * normal) * 0.5 + 0.5;
 #endif
 
+#if !@disableSpec
+    gl_FragData[2] = vec4(0.0, 0.0, 0.0, 1.0);
+#endif
+
     applyShadowDebugOverlay();
 }

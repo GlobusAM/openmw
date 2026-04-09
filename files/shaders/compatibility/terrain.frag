@@ -48,19 +48,25 @@ void main()
 {
     vec2 adjustedUV = (gl_TextureMatrix[0] * vec4(uv, 0.0, 1.0)).xy;
 
+    float height = 0.0;
 #if @parallax
-    float height = texture2D(normalMap, adjustedUV).a;
+    height = texture2D(normalMap, adjustedUV).a;
     adjustedUV += getParallaxOffset(transpose(normalToViewMatrix) * normalize(-passViewPos), height);
+#elif @normalMap
+    height = texture2D(normalMap, adjustedUV).a;
 #endif
+
     vec4 diffuseTex = texture2D(diffuseMap, adjustedUV);
     gl_FragData[0] = vec4(diffuseTex.xyz, 1.0);
 
     vec4 diffuseColor = getDiffuseColor();
     gl_FragData[0].a *= diffuseColor.a;
 
+    float blendAlpha = 1.0;
 #if @blendMap
     vec2 blendMapUV = (gl_TextureMatrix[1] * vec4(uv, 0.0, 1.0)).xy;
-    gl_FragData[0].a *= texture2D(blendMap, blendMapUV).a;
+    blendAlpha = texture2D(blendMap, blendMapUV).a;
+    gl_FragData[0].a *= blendAlpha;
 #endif
 
 #if @normalMap
@@ -99,7 +105,11 @@ void main()
     gl_FragData[0] = applyFogAtDist(gl_FragData[0], euclideanDepth, linearDepth, far);
 
 #if !@disableNormals && @writeNormals
-    gl_FragData[1].xyz = viewNormal * 0.5 + 0.5;
+    gl_FragData[1] = vec4(viewNormal * 0.5 + 0.5, height);
+#endif
+
+#if !@disableSpec && @writeNormals
+    gl_FragData[2] = vec4(0.0, 0.0, 0.0, blendAlpha);
 #endif
 
     applyShadowDebugOverlay();

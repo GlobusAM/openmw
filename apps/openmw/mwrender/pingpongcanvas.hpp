@@ -48,6 +48,8 @@ namespace MWRender
 
         void setTextureNormals(osg::ref_ptr<osg::Texture> tex) { mTextureNormals = tex; }
 
+        void setTextureSpec(osg::ref_ptr<osg::Texture> tex) { mTextureSpec = tex; }
+
         void setTextureDistortion(osg::ref_ptr<osg::Texture> tex) { mTextureDistortion = tex; }
 
         void setCalculateAvgLum(bool enabled) { mAvgLum = enabled; }
@@ -71,6 +73,7 @@ namespace MWRender
         osg::ref_ptr<osg::Texture> mTextureScene;
         osg::ref_ptr<osg::Texture> mTextureDepth;
         osg::ref_ptr<osg::Texture> mTextureNormals;
+        osg::ref_ptr<osg::Texture> mTextureSpec;
         osg::ref_ptr<osg::Texture> mTextureDistortion;
 
         mutable bool mDirty = false;

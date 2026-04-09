@@ -57,7 +57,7 @@ namespace MWRender
     {
     public:
         using FBOArray = std::array<osg::ref_ptr<osg::FrameBufferObject>, 6>;
-        using TextureArray = std::array<osg::ref_ptr<osg::Texture>, 6>;
+        using TextureArray = std::array<osg::ref_ptr<osg::Texture>, 7>;
         using TechniqueList = std::vector<std::shared_ptr<Fx::Technique>>;
 
         enum TextureIndex
@@ -67,6 +67,7 @@ namespace MWRender
             Tex_Depth,
             Tex_OpaqueDepth,
             Tex_Normal,
+            Tex_Spec,
             Tex_Distortion,
         };
 
@@ -87,6 +88,7 @@ namespace MWRender
             Unit_Depth,
             Unit_EyeAdaptation,
             Unit_Normals,
+            Unit_Spec,
             Unit_Distortion,
             Unit_NextFree
         };
@@ -137,6 +139,7 @@ namespace MWRender
         Status disableTechnique(std::shared_ptr<Fx::Technique> technique, bool dirty = true);
 
         bool getSupportsNormalsRT() const { return mNormalsSupported; }
+        bool getSupportsSpecRT() const { return mSpecSupported; }
 
         template <class T>
         void setUniform(std::shared_ptr<Fx::Technique> technique, const std::string& name, const T& value)
@@ -251,11 +254,14 @@ namespace MWRender
         bool mUBO = false;
         bool mHDR = false;
         bool mNormals = false;
+        bool mSpec = false;
         bool mUnderwater = false;
         bool mPassLights = false;
         bool mPrevNormals = false;
+        bool mPrevSpec = false;
         bool mExteriorFlag = false;
         bool mNormalsSupported = false;
+        bool mSpecSupported = false;
         bool mPrevPassLights = false;
 
         int mGLSLVersion;

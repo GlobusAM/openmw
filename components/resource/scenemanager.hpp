@@ -221,6 +221,11 @@ namespace Resource
 
         void setUpNormalsRTForStateSet(osg::StateSet* stateset, bool enabled);
 
+        void setSupportsSpecRT(bool supports) { mSupportsSpecRT = supports; }
+        bool getSupportsSpecRT() const { return mSupportsSpecRT; }
+
+        void setUpSpecRTForStateSet(osg::StateSet* stateset, bool enabled);
+
         void setWeatherParticleOcclusion(bool value) { mWeatherParticleOcclusion = value; }
 
     private:
@@ -257,6 +262,7 @@ namespace Resource
         bool mConvertAlphaTestToAlphaToCoverage = false;
         bool mAdjustCoverageForAlphaTest = false;
         bool mSupportsNormalsRT = false;
+        bool mSupportsSpecRT = false;
         bool mWeatherParticleOcclusion = false;
         bool mUnRefImageDataAfterApply = false;
 

@@ -569,9 +569,13 @@ namespace Resource
         if (!getSupportsNormalsRT())
             return;
         stateset->setAttributeAndModes(new osg::ColorMaski(1, enabled, enabled, enabled, enabled));
+    }
 
-        if (enabled)
-            stateset->setAttributeAndModes(new osg::Disablei(GL_BLEND, 1));
+    void SceneManager::setUpSpecRTForStateSet(osg::StateSet* stateset, bool enabled)
+    {
+        if (!getSupportsSpecRT())
+            return;
+        stateset->setAttributeAndModes(new osg::ColorMaski(2, enabled, enabled, enabled, enabled));
     }
 
     /// @brief Callback to read image files from the VFS.

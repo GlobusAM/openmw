@@ -200,9 +200,12 @@ namespace MWRender
 #endif
 
         if (ext->glDisablei)
+        {
             mNormalsSupported = true;
+            mSpecSupported = true;
+        }
         else
-            Log(Debug::Error) << "'glDisablei' unsupported, pass normals will not be available to shaders.";
+            Log(Debug::Error) << "'glDisablei' unsupported, pass normals and pass spec will not be available to shaders.";
 
         mGLSLVersion = static_cast<int>(ext->glslLanguageVersion * 100);
         mUBO = ext->isUniformBufferObjectSupported && mGLSLVersion >= 330;
@@ -295,6 +298,7 @@ namespace MWRender
 
         mCanvases[frameId]->setPostProcessing(mUsePostProcessing);
         mCanvases[frameId]->setTextureNormals(mNormals ? getTexture(Tex_Normal, frameId) : nullptr);
+        mCanvases[frameId]->setTextureSpec(mSpec ? getTexture(Tex_Spec, frameId) : nullptr);
         mCanvases[frameId]->setMask(mUnderwater, mExteriorFlag);
         mCanvases[frameId]->setCalculateAvgLum(mHDR);
 
@@ -403,9 +407,11 @@ namespace MWRender
             mCanvases[frameId]->setPasses(Fx::DispatchArray(mTemplateData));
         }
 
-        if ((mNormalsSupported && mNormals != mPrevNormals) || (mPassLights != mPrevPassLights))
+        if ((mNormalsSupported && mNormals != mPrevNormals) || (mSpecSupported && mSpec != mPrevSpec)
+            || (mPassLights != mPrevPassLights))
         {
             mPrevNormals = mNormals;
+            mPrevSpec = mSpec;
             mPrevPassLights = mPassLights;
 
             mViewer->stopThreading();
@@ -416,6 +422,7 @@ namespace MWRender
                     = MWBase::Environment::get().getResourceSystem()->getSceneManager()->getShaderManager();
                 auto defines = shaderManager.getGlobalDefines();
                 defines["disableNormals"] = mNormals ? "0" : "1";
+                defines["disableSpec"] = mSpec ? "0" : "1";
                 shaderManager.setGlobalDefines(defines);
             }
 
@@ -461,8 +468,11 @@ namespace MWRender
             texture->dirtyTextureObject();
         }
 
-        textures[Tex_Normal]->setSourceFormat(GL_RGB);
-        textures[Tex_Normal]->setInternalFormat(GL_RGB);
+        textures[Tex_Normal]->setSourceFormat(GL_RGBA);
+        textures[Tex_Normal]->setInternalFormat(GL_RGBA);
+
+        textures[Tex_Spec]->setSourceFormat(GL_RGBA);
+        textures[Tex_Spec]->setInternalFormat(GL_RGBA);
 
         textures[Tex_Distortion]->setSourceFormat(GL_RGB);
         textures[Tex_Distortion]->setInternalFormat(GL_RGB);
@@ -489,6 +499,9 @@ namespace MWRender
         if (mNormals && mNormalsSupported)
             fbos[FBO_Primary]->setAttachment(
                 osg::Camera::COLOR_BUFFER1, Stereo::createMultiviewCompatibleAttachment(textures[Tex_Normal]));
+        if (mSpec && mSpecSupported)
+            fbos[FBO_Primary]->setAttachment(
+                osg::Camera::COLOR_BUFFER2, Stereo::createMultiviewCompatibleAttachment(textures[Tex_Spec]));
         fbos[FBO_Primary]->setAttachment(
             osg::Camera::PACKED_DEPTH_STENCIL_BUFFER, Stereo::createMultiviewCompatibleAttachment(textures[Tex_Depth]));
 
@@ -514,6 +527,15 @@ namespace MWRender
                 fbos[FBO_Intercept]->setAttachment(osg::FrameBufferObject::BufferComponent::COLOR_BUFFER1,
                     Stereo::createMultiviewCompatibleAttachment(textures[Tex_Normal]));
             }
+            if (mSpec && mSpecSupported)
+            {
+                auto specRB = createFrameBufferAttachmentFromTemplate(
+                    Usage::RENDER_BUFFER, width, height, textures[Tex_Spec], mSamples);
+                fbos[FBO_Multisample]->setAttachment(osg::FrameBufferObject::BufferComponent::COLOR_BUFFER2, specRB);
+                fbos[FBO_FirstPerson]->setAttachment(osg::FrameBufferObject::BufferComponent::COLOR_BUFFER2, specRB);
+                fbos[FBO_Intercept]->setAttachment(osg::FrameBufferObject::BufferComponent::COLOR_BUFFER2,
+                    Stereo::createMultiviewCompatibleAttachment(textures[Tex_Spec]));
+            }
             auto depthRB = createFrameBufferAttachmentFromTemplate(
                 Usage::RENDER_BUFFER, width, height, textures[Tex_Depth], mSamples);
             fbos[FBO_Multisample]->setAttachment(osg::FrameBufferObject::BufferComponent::COLOR_BUFFER0, colorRB);
@@ -531,6 +553,9 @@ namespace MWRender
             if (mNormals && mNormalsSupported)
                 fbos[FBO_FirstPerson]->setAttachment(osg::FrameBufferObject::BufferComponent::COLOR_BUFFER1,
                     Stereo::createMultiviewCompatibleAttachment(textures[Tex_Normal]));
+            if (mSpec && mSpecSupported)
+                fbos[FBO_FirstPerson]->setAttachment(osg::FrameBufferObject::BufferComponent::COLOR_BUFFER2,
+                    Stereo::createMultiviewCompatibleAttachment(textures[Tex_Spec]));
         }
 
         fbos[FBO_OpaqueDepth] = new osg::FrameBufferObject;
@@ -563,6 +588,7 @@ namespace MWRender
         bool sunglare = true;
         mHDR = false;
         mNormals = false;
+        mSpec = false;
         mPassLights = false;
 
         std::vector<Fx::Types::RenderTarget> attachmentsToDirty;
@@ -589,6 +615,9 @@ namespace MWRender
             if (technique->getNormals())
                 mNormals = true;
 
+            if (technique->getSpec())
+                mSpec = true;
+
             if (technique->getLights())
                 mPassLights = true;
 
@@ -603,6 +632,9 @@ namespace MWRender
 
             if (mNormals)
                 node.mRootStateSet->addUniform(new osg::Uniform("omw_SamplerNormals", Unit_Normals));
+
+            if (mSpec)
+                node.mRootStateSet->addUniform(new osg::Uniform("omw_SamplerSpec", Unit_Spec));
 
             if (technique->getHDR())
                 node.mRootStateSet->addUniform(new osg::Uniform("omw_EyeAdaptation", Unit_EyeAdaptation));

@@ -244,6 +244,9 @@ namespace MWRender
             if (mTextureNormals)
                 node.mRootStateSet->setTextureAttribute(PostProcessor::TextureUnits::Unit_Normals, mTextureNormals);
 
+            if (mTextureSpec)
+                node.mRootStateSet->setTextureAttribute(PostProcessor::TextureUnits::Unit_Spec, mTextureSpec);
+
             if (mTextureDistortion)
                 node.mRootStateSet->setTextureAttribute(
                     PostProcessor::TextureUnits::Unit_Distortion, mTextureDistortion);

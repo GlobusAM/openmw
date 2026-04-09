@@ -213,6 +213,8 @@ namespace MWRender
         globalDefines["groundcoverStompIntensity"] = std::to_string(Settings::groundcover().mStompIntensity);
 
         globalDefines["reverseZ"] = reverseZ ? "1" : "0";
+        globalDefines["disableNormals"] = "1";
+        globalDefines["disableSpec"] = "1";
 
         // It is unnecessary to stop/start the viewer as no frames are being rendered yet.
         mResourceSystem->getSceneManager()->getShaderManager().setGlobalDefines(globalDefines);
@@ -269,6 +271,7 @@ namespace MWRender
             mPostProcessor->getTexture(PostProcessor::Tex_OpaqueDepth, 0),
             mPostProcessor->getTexture(PostProcessor::Tex_OpaqueDepth, 1));
         resourceSystem->getSceneManager()->setSupportsNormalsRT(mPostProcessor->getSupportsNormalsRT());
+        resourceSystem->getSceneManager()->setSupportsSpecRT(mPostProcessor->getSupportsSpecRT());
         resourceSystem->getSceneManager()->setWeatherParticleOcclusion(Settings::shaders().mWeatherParticleOcclusion);
 
         // water goes after terrain for correct waterculling order
@@ -305,6 +308,7 @@ namespace MWRender
         sceneRoot->getOrCreateStateSet()->addUniform(new osg::Uniform("distortionStrength", 0.f));
 
         resourceSystem->getSceneManager()->setUpNormalsRTForStateSet(sceneRoot->getOrCreateStateSet(), true);
+        resourceSystem->getSceneManager()->setUpSpecRTForStateSet(sceneRoot->getOrCreateStateSet(), true);
 
         mFog = std::make_unique<FogManager>();
 

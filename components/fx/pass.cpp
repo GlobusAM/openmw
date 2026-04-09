@@ -74,6 +74,7 @@ namespace Fx
 #define OMW_EXPONENTIAL_FOG @exponentialFog
 #define OMW_HDR @hdr
 #define OMW_NORMALS @normals
+#define OMW_SPEC @spec
 #define OMW_USE_BINDINGS @useBindings
 #define OMW_MULTIVIEW @multiview
 #define omw_In @in
@@ -92,6 +93,7 @@ uniform @builtinSampler omw_SamplerLastShader;
 uniform @builtinSampler omw_SamplerLastPass;
 uniform @builtinSampler omw_SamplerDepth;
 uniform @builtinSampler omw_SamplerNormals;
+uniform @builtinSampler omw_SamplerSpec;
 uniform @builtinSampler omw_SamplerDistortion;
 
 uniform vec4 omw_PointLights[@pointLightCount];
@@ -202,6 +204,24 @@ mat4 omw_InvProjectionMatrix()
 #endif
     }
 
+    float omw_GetHeight(vec2 uv)
+    {
+#if OMW_MULTIVIEW
+        return omw_Texture2DArray(omw_SamplerNormals, vec3(uv, gl_ViewID_OVR)).a;
+#else
+        return omw_Texture2D(omw_SamplerNormals, uv).a;
+#endif
+    }
+
+    vec4 omw_GetSpec(vec2 uv)
+    {
+#if OMW_MULTIVIEW
+        return omw_Texture2DArray(omw_SamplerSpec, vec3(uv, gl_ViewID_OVR));
+#else
+        return omw_Texture2D(omw_SamplerSpec, uv);
+#endif
+    }
+
     vec3 omw_GetNormalsWorldSpace(vec2 uv)
     {
         return (vec4(omw_GetNormals(uv), 0.0) * omw.viewMatrix).rgb;
@@ -279,6 +299,7 @@ float omw_EstimateFogCoverageFromUV(vec2 uv)
                   { "@profile", technique.getGLSLProfile() }, { "@extensions", extBlock.str() },
                   { "@uboStruct", StateUpdater::getStructDefinition() }, { "@ubo", mUBO ? "1" : "0" },
                   { "@normals", technique.getNormals() ? "1" : "0" },
+                  { "@spec", technique.getSpec() ? "1" : "0" },
                   { "@reverseZ", SceneUtil::AutoDepth::isReversed() ? "1" : "0" },
                   { "@radialFog", Settings::fog().mRadialFog ? "1" : "0" },
                   { "@exponentialFog", Settings::fog().mExponentialFog ? "1" : "0" },
