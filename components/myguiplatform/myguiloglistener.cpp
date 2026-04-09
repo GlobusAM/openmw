@@ -47,7 +47,7 @@ namespace MyGUIPlatform
             case Debug::Warning:
                 return MyGUI::LogLevel::Warning;
             default:
-                return MyGUI::LogLevel::Error;
+                return MyGUI::LogLevel::Info;
         }
     }
 }
