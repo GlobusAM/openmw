@@ -347,7 +347,7 @@ namespace Debug
             if (value == "DEBUG")
                 return Debug;
 
-            return Error;
+            return Verbose;
         }
 
         static std::unique_ptr<std::ostream> rawStdout = nullptr;
@@ -393,7 +393,7 @@ namespace Debug
         if (const char* env = getenv("OPENMW_RECAST_MAX_LOG_LEVEL"))
             return toLevel(env);
 
-        return Warning;
+        return Error;
     }
 
     void setupLogging(const std::filesystem::path& logDir, std::string_view appName)
