@@ -104,12 +104,27 @@ void main()
 
     gl_FragData[0] = applyFogAtDist(gl_FragData[0], euclideanDepth, linearDepth, far);
 
+    // ---- PREMULTIPLY TERRAIN ALPHA ----
+    // We multiply our RGB/A values by the layer's blend weight in the shader.
+    // Coupled with GL_ONE, GL_ONE blending in material.cpp, this prevents the hardware
+    // from blending MRTs incorrectly based on their respective alpha channels,
+    // allowing you to store anything (like height or gloss) in the alpha channels!
+    float targetAlpha = gl_FragData[0].a;
+    gl_FragData[0].xyz *= targetAlpha;
+    // We allow gl_FragData[0].a to remain targetAlpha so it sums to 1.0 in the framebuffer
+
 #if !@disableNormals && @writeNormals
-    gl_FragData[1] = vec4(viewNormal * 0.5 + 0.5, height);
+    // To encode height into normal map alpha, you can change 1.0 below to your height variable.
+    // e.g. vec4 normalOut = vec4(viewNormal * 0.5 + 0.5, height);
+    vec4 normalOut = vec4(viewNormal * 0.5 + 0.5, 1.0);
+    gl_FragData[1] = normalOut * targetAlpha;
 #endif
 
 #if !@disableSpec && @writeNormals
-    gl_FragData[2] = vec4(0.0, 0.0, 0.0, blendAlpha);
+    // To encode gloss into specular alpha, you can change 1.0 below to your gloss variable.
+    // e.g. vec4 specOut = vec4(0.0, 0.0, 0.0, gloss);
+    vec4 specOut = vec4(1.0, 1.0, 1.0, diffuseTex.a);
+    gl_FragData[2] = specOut * targetAlpha;
 #endif
 
     applyShadowDebugOverlay();

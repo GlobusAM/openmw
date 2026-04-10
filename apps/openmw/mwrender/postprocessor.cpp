@@ -468,8 +468,8 @@ namespace MWRender
             texture->dirtyTextureObject();
         }
 
-        textures[Tex_Normal]->setSourceFormat(GL_RGBA);
-        textures[Tex_Normal]->setInternalFormat(GL_RGBA);
+        textures[Tex_Normal]->setSourceFormat(GL_RGB);
+        textures[Tex_Normal]->setInternalFormat(GL_RGB);
 
         textures[Tex_Spec]->setSourceFormat(GL_RGBA);
         textures[Tex_Spec]->setInternalFormat(GL_RGBA);

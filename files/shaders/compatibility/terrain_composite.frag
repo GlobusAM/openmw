@@ -19,4 +19,7 @@ void main()
     vec2 blendMapUV = (gl_TextureMatrix[1] * vec4(uv, 0.0, 1.0)).xy;
     gl_FragData[0].a *= texture2D(blendMap, blendMapUV).a;
 #endif
+
+    // Pre-multiply by the layer's blend weight to match the GL_ONE blending mode
+    gl_FragData[0].xyz *= gl_FragData[0].a;
 }
