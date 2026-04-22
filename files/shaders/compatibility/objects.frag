@@ -271,7 +271,11 @@ vec2 screenCoords = gl_FragCoord.xy / screenRes;
 #endif
 
 #if !@disableSpec
+#if @specularMap
+    gl_FragData[2] = vec4(specTex.xyz, 1.0);
+#else
     gl_FragData[2] = vec4(0.0, 0.0, 0.0, 1.0);
+#endif
 #endif
 
     applyShadowDebugOverlay();

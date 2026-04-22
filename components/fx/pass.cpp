@@ -204,15 +204,6 @@ mat4 omw_InvProjectionMatrix()
 #endif
     }
 
-    float omw_GetHeight(vec2 uv)
-    {
-#if OMW_MULTIVIEW
-        return omw_Texture2DArray(omw_SamplerNormals, vec3(uv, gl_ViewID_OVR)).a;
-#else
-        return omw_Texture2D(omw_SamplerNormals, uv).a;
-#endif
-    }
-
     vec4 omw_GetSpec(vec2 uv)
     {
 #if OMW_MULTIVIEW
