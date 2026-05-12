@@ -91,6 +91,15 @@
 -- @usage
 -- content.lights.records.MyLight = { template = content.lights.records['torch'], duration = -1, name = 'Infinite Torch' }
 
+--- @{#LockpickContent}: Lockpick manipulation.
+-- @field [parent=#content] #LockpickContent lockpicks
+
+---
+-- A mutable list of all @{openmw.types#LockpickRecord}s.
+-- @field [parent=#LockpickContent] #list<openmw.types#LockpickRecord> records
+-- @usage
+-- content.lockpicks.records.MyLockpick = { template = content.lockpicks.records['skeleton_key'], name = 'Digipick' }
+
 --- @{#MagicEffectContent}: Magic effect manipulation.
 -- @field [parent=#content] #MagicEffectContent magicEffects
 
@@ -126,6 +135,15 @@
 -- @field [parent=#ProbeContent] #list<openmw.types#ProbeRecord> records
 -- @usage
 -- content.probes.records.MyProbe = { template = content.probes.records['probe_bent'], quality = 5, name = 'Alien Probe' }
+
+--- @{#RepairContent}: Repair item manipulation.
+-- @field [parent=#content] #RepairContent repairs
+
+---
+-- A mutable list of all @{openmw.types#RepairRecord}s.
+-- @field [parent=#RepairContent] #list<openmw.types#RepairRecord> records
+-- @usage
+-- content.repairs.records.MyRepair = { template = content.repairs.records['hammer_repair'], name = 'Hammer Time' }
 
 --- @{#SpellContent}: Spell manipulation.
 -- @field [parent=#content] #SpellContent spells

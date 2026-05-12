@@ -7,8 +7,10 @@
 #include <components/esm3/loadench.hpp>
 #include <components/esm3/loadingr.hpp>
 #include <components/esm3/loadligh.hpp>
+#include <components/esm3/loadlock.hpp>
 #include <components/esm3/loadmisc.hpp>
 #include <components/esm3/loadprob.hpp>
+#include <components/esm3/loadrepa.hpp>
 #include <components/esm3/loadsoun.hpp>
 #include <components/esm3/loadspel.hpp>
 #include <components/esm3/loadstat.hpp>
@@ -318,6 +320,15 @@ namespace MWLua
             return LuaUtil::makeReadOnly(api);
         }
 
+        sol::table initLockpickBindings(sol::state_view& lua, MWWorld::Store<ESM::Lockpick>& store)
+        {
+            addRecordStoreBindings<ESM::Lockpick>(lua, &MWLua::tableToLockpick);
+            addMutableLockpickType(lua);
+            sol::table api(lua, sol::create);
+            api["records"] = MutableStore<ESM::Lockpick>{ store };
+            return LuaUtil::makeReadOnly(api);
+        }
+
         sol::table initMagicEffectBindings(sol::state_view& lua, MWWorld::Store<ESM::MagicEffect>& store)
         {
             addRecordStoreBindings<ESM::MagicEffect>(lua, &MWLua::tableToMagicEffect);
@@ -363,6 +374,15 @@ namespace MWLua
             addMutableProbeType(lua);
             sol::table api(lua, sol::create);
             api["records"] = MutableStore<ESM::Probe>{ store };
+            return LuaUtil::makeReadOnly(api);
+        }
+
+        sol::table initRepairBindings(sol::state_view& lua, MWWorld::Store<ESM::Repair>& store)
+        {
+            addRecordStoreBindings<ESM::Repair>(lua, &MWLua::tableToRepair);
+            addMutableRepairType(lua);
+            sol::table api(lua, sol::create);
+            api["records"] = MutableStore<ESM::Repair>{ store };
             return LuaUtil::makeReadOnly(api);
         }
 
@@ -417,10 +437,12 @@ namespace MWLua
         api["globals"] = initGlobalVariableBindings(lua, esmStore.getWritable<ESM::Global>());
         api["ingredients"] = initIngredientBindings(lua, esmStore.getWritable<ESM::Ingredient>());
         api["lights"] = initLightBindings(lua, esmStore.getWritable<ESM::Light>());
+        api["lockpicks"] = initLockpickBindings(lua, esmStore.getWritable<ESM::Lockpick>());
         api["magicEffects"] = initMagicEffectBindings(lua, esmStore.getWritable<ESM::MagicEffect>());
         api["miscs"] = initMiscBindings(lua, esmStore.getWritable<ESM::Miscellaneous>());
         api["potions"] = initPotionBindings(lua, esmStore.getWritable<ESM::Potion>());
         api["probes"] = initProbeBindings(lua, esmStore.getWritable<ESM::Probe>());
+        api["repairs"] = initRepairBindings(lua, esmStore.getWritable<ESM::Repair>());
         api["spells"] = initSpellBindings(lua, esmStore.getWritable<ESM::Spell>());
         api["statics"] = initStaticBindings(lua, esmStore.getWritable<ESM::Static>());
         api["sounds"] = initSoundBindings(lua, esmStore.getWritable<ESM::Sound>());
